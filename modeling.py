@@ -5,7 +5,9 @@ from transformers import (
     AlbertPreTrainedModel,
     AlbertModel,
     DistilBertPreTrainedModel,
-    DistilBertModel,
+    DistilBertModel,    
+    RobertaPreTrainedModel,  # 추가
+    RobertaModel,            # 추가
 )
 
 
@@ -15,7 +17,7 @@ class BertForSentimentClassification(BertPreTrainedModel):
         # BERT.
         self.bert = BertModel(config)
         # Classification layer, which takes [CLS] representation and outputs logits.
-        self.cls_layer = nn.Linear(config.hidden_size, 1)
+        self.cls_layer = nn.Linear(config.hidden_size, 3)
 
     def forward(self, input_ids, attention_mask):
         """
@@ -69,6 +71,18 @@ class DistilBertForSentimentClassification(DistilBertPreTrainedModel):
                 (where B is the batch size and T is the input length)
         """
         outputs = self.distilbert(input_ids=input_ids, attention_mask=attention_mask)
+        cls_reps = outputs.last_hidden_state[:, 0]
+        logits = self.cls_layer(cls_reps)
+        return logits
+
+class RobertaForSentimentClassification(RobertaPreTrainedModel):
+    def __init__(self, config):
+        super().__init__(config)
+        self.roberta = RobertaModel(config)
+        self.cls_layer = nn.Linear(config.hidden_size, 3)
+
+    def forward(self, input_ids, attention_mask):
+        outputs = self.roberta(input_ids=input_ids, attention_mask=attention_mask)
         cls_reps = outputs.last_hidden_state[:, 0]
         logits = self.cls_layer(cls_reps)
         return logits

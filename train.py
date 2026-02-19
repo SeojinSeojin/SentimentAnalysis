@@ -13,19 +13,19 @@ if __name__ == "__main__":
     analyzer = Analyzer(will_train=True, args=args)
 
     # Set citerion, which takes as input logits of positive class and computes binary cross-entropy.
-    criterion = nn.BCEWithLogitsLoss()
+    criterion = nn.CrossEntropyLoss()
 
     # Set optimizer to Adam.
     optimizer = optim.Adam(params=analyzer.model.parameters(), lr=args.lr)
 
     # Initialize training set and loader.
     train_set = SSTDataset(
-        filename="data/train.tsv",
+        filename="temp/train.tsv",
         maxlen=args.maxlen_train,
         tokenizer=analyzer.tokenizer,
     )
     val_set = SSTDataset(
-        filename="data/dev.tsv", maxlen=args.maxlen_val, tokenizer=analyzer.tokenizer
+        filename="temp/dev.tsv", maxlen=args.maxlen_val, tokenizer=analyzer.tokenizer
     )
 
     # Initialize validation set and loader.

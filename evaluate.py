@@ -12,11 +12,11 @@ if __name__ == "__main__":
     analyzer = Analyzer(will_train=False, args=args)
 
     # Set citerion, which takes as input logits of positive class and computes binary cross-entropy.
-    criterion = nn.BCEWithLogitsLoss()
+    criterion = nn.CrossEntropyLoss()
 
     # Initialize validation set and loader.
     val_set = SSTDataset(
-        filename="data/dev.tsv", maxlen=args.maxlen_val, tokenizer=analyzer.tokenizer
+        filename="temp/dev.tsv", maxlen=args.maxlen_val, tokenizer=analyzer.tokenizer
     )
     val_loader = DataLoader(
         dataset=val_set, batch_size=args.batch_size, num_workers=args.num_threads

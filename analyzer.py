@@ -6,6 +6,7 @@ from modeling import (
     BertForSentimentClassification,
     AlbertForSentimentClassification,
     DistilBertForSentimentClassification,
+    RobertaForSentimentClassification,  # 추가
 )
 from utils import get_accuracy_from_logits
 
@@ -34,6 +35,10 @@ class Analyzer:
             )
         elif self.config.model_type == "distilbert":
             self.model = DistilBertForSentimentClassification.from_pretrained(
+                args.model_name_or_path
+            )
+        elif self.config.model_type == "roberta":
+            self.model = RobertaForSentimentClassification.from_pretrained(
                 args.model_name_or_path
             )
         else:
@@ -77,7 +82,7 @@ class Analyzer:
                 # Get batch accuracy and add it.
                 batch_accuracy_summation += get_accuracy_from_logits(logits, labels)
                 # Get batch loss and add it.
-                loss += criterion(logits.squeeze(-1), labels.float()).item()
+                loss += criterion(logits, labels.long()).item()
                 # Increment num_batches.
                 num_batches += 1
         # Calculate accuracy.
@@ -104,7 +109,7 @@ class Analyzer:
             # Get logits.
             logits = self.model(input_ids=input_ids, attention_mask=attention_mask)
             # Get loss.
-            loss = criterion(input=logits.squeeze(-1), target=labels.float())
+            loss = criterion(logits, labels.long())
             # Backpropagate the loss.
             loss.backward()
             # Optimize the model.

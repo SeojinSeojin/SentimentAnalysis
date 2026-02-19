@@ -18,7 +18,7 @@ parser.add_argument(
     "--batch_size", type=int, default=32, help="Batch size during training."
 )
 parser.add_argument("--lr", type=float, default=2e-5, help="Learning rate for Adam.")
-parser.add_argument("--num_eps", type=int, default=2, help="Number of training epochs.")
+parser.add_argument("--num_eps", type=int, default=10, help="Number of training epochs.")
 parser.add_argument(
     "--num_threads",
     type=int,
@@ -34,7 +34,7 @@ parser.add_argument(
 parser.add_argument(
     "--model_name_or_path",
     type=str,
-    default=None,
+    default="cardiffnlp/twitter-roberta-base-sentiment-latest",
     help="""Name of or path to the pretrained/trained model.
             For training choose between bert-base-uncased, albert-base-v2, distilbert-base-uncased etc.
             For evaluating/analyzing/server choose between barissayil/bert-sentiment-analysis-sst and paths to the models you have trained previously.""",

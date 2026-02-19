@@ -24,19 +24,18 @@ class SSTDataset(Dataset):
         return len(self.df)
 
     def __getitem__(self, index):
-        # Select sentence and label at specified index from data frame.
         sentence = self.df.loc[index, "sentence"]
-        label = self.df.loc[index, "label"]
-        # Preprocess text to be suitable for transformer
-        tokens = self.tokenizer.tokenize(sentence)
-        tokens = ["[CLS]"] + tokens + ["[SEP]"]
-        if len(tokens) < self.maxlen:
-            tokens = tokens + ["[PAD]" for _ in range(self.maxlen - len(tokens))]
-        else:
-            tokens = tokens[: self.maxlen - 1] + ["[SEP]"]
-        # Obtain indices of tokens and convert them to tensor.
-        input_ids = torch.tensor(self.tokenizer.convert_tokens_to_ids(tokens))
-        # Obtain attention mask i.e. a tensor containing 1s for no padded tokens and 0s for padded ones.
-        attention_mask = (input_ids != 0).long()
-        # Return input IDs, attention mask, and label.
+        label = int(self.df.loc[index, "label"]) + 1
+
+        # RoBERTa 방식으로 토크나이징 (special token 자동 추가)
+        encoding = self.tokenizer(
+            sentence,
+            max_length=self.maxlen,
+            padding="max_length",
+            truncation=True,
+            return_tensors="pt"
+        )
+
+        input_ids = encoding["input_ids"].squeeze(0)
+        attention_mask = encoding["attention_mask"].squeeze(0)
         return input_ids, attention_mask, label
